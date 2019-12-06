@@ -1,45 +1,12 @@
 import * as Koa from 'koa';
-import * as Router from 'koa-router';
 var bodyParser = require('koa-bodyparser');
 import * as koaJwt from 'koa-jwt';
-var jwt = require('jsonwebtoken');
-var token = jwt.sign({ foo: 'bar' }, 'shhhhh');
+// var token = jwt.sign({ foo: 'bar' }, 'shhhhh');
 const app = new Koa();
-const router = new Router();
-import { ResultJson } from './commit/ResultJson';
-let secret: string = 'shared-secret';
-// let jwt: koaJwt.Middleware = koaJwt({
-//   secret
-// });
-router.post('/user/login', async (ctx: any) => {
-  // const { body } = ctx.request;
-  let postData = ctx.request.body
-  console.log(ctx.state)
-  let result: ResultJson = {
-    code: 1,
-    data: {
-      userInfo: postData,
-      token: jwt.sign({
-        exp: Math.floor(Date.now() / 1000) + (60 * 60),
-        data: postData.userName
-      }, secret)
-    },
-    message: '登录成功'
-  }
-  // const data = { name: body.userName, pswd: body.password };
-  ctx.body = result;
-});
+// const router = new Router();
+import UserController from './controller/UserController';
 
-
-router.get('/user/list', async (ctx: any) => {
-  // const { body } = ctx.request;
-  let postData = ctx.request.body
-  console.log(ctx.state)
-
-
-  // const data = { name: body.userName, pswd: body.password };
-  ctx.body = '获取用户列表数据';
-});
+import { SECRET, getToken } from './common/Token';
 
 app.use(bodyParser());
 
@@ -65,27 +32,14 @@ app.use((ctx: any, next: Function): void => {
   })
 })
 
-/**
- * 获取请求头中的token
- * @param ctx 
- * @param opt 
- */
-function getToken(ctx: any, opt: any): string {
-  if (!ctx.header || !ctx.header.token) {
-    return null;
-  }
-
-  return ctx.header.token;
-}
-
 
 app.use(koaJwt({
-  secret: secret,
+  secret: SECRET,
   getToken: getToken
 }).unless({
   path: [/\/user\/login/]
 }));
-app.use(router.routes());
+app.use(UserController.routes());
 
 app.listen(3000);
 
