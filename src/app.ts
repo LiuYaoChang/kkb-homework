@@ -1,26 +1,16 @@
 import * as Koa from 'koa';
 var bodyParser = require('koa-bodyparser');
+const path = require('path')
 import * as koaJwt from 'koa-jwt';
 // var token = jwt.sign({ foo: 'bar' }, 'shhhhh');
-const app = new Koa();
-// const router = new Router();
-import UserController from './controller/UserController';
-
+import { Route } from './common/Controller';
 import { SECRET, getToken } from './common/Token';
 
+const app = new Koa();
+const apiPath = path.resolve(__dirname, './controller')
+// const app = new Koa();
 app.use(bodyParser());
 
-// app.use((ctx: any, next: Function): void => {
-//   let reg: RegExp = /^\/user\/login/;
-//   let url: string = ctx.url;
-//   let token: string = ctx.state;
-//   // 不是登录接口
-//   if (!reg.test(url)) {
-//     console.log('不是登录接口', token);
-//   }
-//   next();
-// });
-// 错误处理
 app.use((ctx: any, next: Function): void => {
   return next().catch((err: any): void => {
       if(err.status === 401){
@@ -39,8 +29,11 @@ app.use(koaJwt({
 }).unless({
   path: [/\/user\/login/]
 }));
-app.use(UserController.routes());
-
+process.nextTick(() => {
+  const router = new Route(app, apiPath)
+  router.init();
+})
+// app.use(UserController.routes());
 app.listen(3000);
 
 console.log('服务启动成功： 3000');
