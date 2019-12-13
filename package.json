@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@types/koa-bodyparser": "^4.3.0",
     "glob": "^7.1.6",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.11.0",

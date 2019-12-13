@@ -66,9 +66,9 @@ class Route {
   init (): void {
     console.log('******* 初始化路由 ******')
     // 加载controller目录下的所有文件， 注册装饰器
-    console.log('apiPaht', this.apiPaht)
+    // console.log('apiPaht', this.apiPaht)
     const filePaths = glob.sync(path.join(this.apiPaht, './*ts'))
-    console.log('files', JSON.stringify(filePaths))
+    // console.log('files', JSON.stringify(filePaths))
     filePaths.forEach(require)
 
     for (let [config, value] of routerMap) {
@@ -81,6 +81,7 @@ class Route {
     }
     this.app.use(this.router.routes())
     this.app.use(this.router.allowedMethods())
+    console.log('>>>>>>')
   } 
 }
 
